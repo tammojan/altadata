@@ -37,7 +37,9 @@ for ii in range(bstart,bend+1):
 	for jj in range(1,int(end)+1):
 		print 'Processing task ID %.3d...' % jj
 
-		cmd = "iget -rPI -X WSRTA%s%.3d-icat.irods-status --lfrestart WSRTA%s%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,date,jj,date,jj,ii)
+		cmd = "iget -rPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
 		print cmd
 		os.system(cmd)
+
+os.system('rm -rf *irods-status')
 print "###########################"
