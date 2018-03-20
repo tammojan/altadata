@@ -10,9 +10,9 @@ except:
 
 # Get date
 try:
-	end = sys.argv[2]
+	irange = sys.argv[2]
 except:
-	print "End ID required! Format: NNN e.g. 010"
+	print "ID range required! Format: NNN-NNN e.g. 002-010"
 	sys.exit()
 
 # Get beams
@@ -25,6 +25,10 @@ except:
 bstart = int(brange.split('-')[0])
 bend = int(brange.split('-')[1])
 
+# Now with all the information required, loop through beams
+istart = int(irange.split('-')[0])
+iend = int(irange.split('-')[1])
+
 print "Start beam:",bstart
 print "End beam:",bend
 
@@ -34,7 +38,7 @@ for ii in range(bstart,bend+1):
 	
 	print 'Processing Beam %.3d...' % ii
 
-	for jj in range(1,int(end)+1):
+	for jj in range(int(istart),int(iend)+1):
 		print 'Processing task ID %.3d...' % jj
 
 		cmd = "iget -rPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
