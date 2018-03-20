@@ -1,3 +1,11 @@
+# ALTA data transfer: Uses the iROD client to transfer data from ALTA
+# Example usage: >> python verifydata_alta.py 180316 004-010 00-36
+# V.A. Moss (vmoss.astro@gmail.com)
+
+__author__ = "V.A. Moss"
+__date__ = "$20-mar-2018 16:00:00$"
+__version__ = "0.1"
+
 import os
 import sys
 
@@ -43,8 +51,7 @@ for ii in range(bstart,bend+1):
 		print 'Processing task ID %.3d...' % jj
 
 		cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS /data/apertif/temp/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,ii,date,jj,ii)
-		# Don't print command, it clutters it
-		#print cmd
+
 		os.system(cmd)
 
 print "###########################"

@@ -1,3 +1,11 @@
+# ALTA data transfer: Uses the iROD client to transfer data from ALTA
+# Example usage: >> python getdata_alta.py 180316 004-010 00-36
+# V.A. Moss (vmoss.astro@gmail.com)
+
+__author__ = "V.A. Moss"
+__date__ = "$20-mar-2018 16:00:00$"
+__version__ = "0.1"
+
 import os
 import sys
 
@@ -20,6 +28,7 @@ try:
 	brange = sys.argv[3]
 except:
 	print "Beam range required! Format: NN-NN e.g. 00-37"
+	sys.exit()
 
 # Now with all the information required, loop through beams
 bstart = int(brange.split('-')[0])
