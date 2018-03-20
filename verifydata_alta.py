@@ -43,7 +43,8 @@ for ii in range(bstart,bend+1):
 		print 'Processing task ID %.3d...' % jj
 
 		cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS /data/apertif/temp/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,ii,date,jj,ii)
-		print cmd
+		# Don't print command, it clutters it
+		#print cmd
 		os.system(cmd)
 
 print "###########################"
