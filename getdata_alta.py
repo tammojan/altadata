@@ -8,6 +8,10 @@ __version__ = "0.1"
 
 import os
 import sys
+import time
+
+# Time the transfer
+start = time.time()
 
 # Get date
 try:
@@ -56,3 +60,10 @@ for ii in range(bstart,bend+1):
 
 os.system('rm -rf *irods-status')
 print "###########################"
+
+# Time the transfer
+end = time.time()
+
+# Print the results
+diff = (end-start)/60. # in min
+print "Total time to transfer data: %.2f min" % diff
