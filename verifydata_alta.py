@@ -50,7 +50,11 @@ for ii in range(bstart,bend+1):
 	for jj in range(int(istart),int(iend)+1):
 		print 'Processing task ID %.3d...' % jj
 
-		cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS /data/apertif/temp/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,ii,date,jj,ii)
+		# Toggle for when we started using more digits:
+		if int(date) <= 180216:
+			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS /data/apertif/temp/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,ii,date,jj,ii)
+		else:
+			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS /data/apertif/temp/WSRTA%s%.3d_B%.3d.MS" % (date,jj,date,jj,ii,date,jj,ii)
 
 		os.system(cmd)
 
