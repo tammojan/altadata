@@ -54,7 +54,11 @@ for ii in range(bstart,bend+1):
 	for jj in range(int(istart),int(iend)+1):
 		print 'Processing task ID %.3d...' % jj
 
-		cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
+		if int(date) <= 180216:
+			cmd = "iget -rfPIT -X WSRTA%s%.2d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.2d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
+		else:
+			cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
+
 		print cmd
 		os.system(cmd)
 
