@@ -24,7 +24,7 @@ print(files)
 # Write an out file
 out = open('transfer_%s_to_ALTA.sh' % fname,'w')
 out.write("""#!/bin/bash
-ils imkdir -p %s/%s
+imkdir -p %s/%s
 iput -rkI -X logs/%s-icat.irods-status --lfrestart logs/%s-icat.lf-irods-status --retries 5 -N 4 -R alta-icat-Resc %s %s/%s >> logs/transfer_%s_to_alta_icat.log &
 wait #iput
 irsync -rsl %s i:%s/%s > logs/transfer_%s_to_alta_verify.log 2>&1
@@ -37,6 +37,9 @@ else
 fi
 """ % (dname,fname,fname,fname,' '.join(files),dname,fname,fname,' '.join(files),dname,fname,fname,fname,fname,fname))
 out.flush()
+
+# Make the file executable
+os.system('chmod oug+x transfer_%s_to_ALTA.sh' % (fname))
 
 # Move the file to the correct folder 
 os.system('mv transfer_%s_to_ALTA.sh %s' % (fname,fname))
