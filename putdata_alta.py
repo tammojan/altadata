@@ -37,3 +37,7 @@ else
 fi
 """ % (dname,fname,fname,fname,' '.join(files),dname,fname,fname,' '.join(files),dname,fname,fname,fname,fname,fname))
 out.flush()
+
+# Move the file to the correct folder 
+os.system('mv transfer_%s_to_ALTA.sh %s' % (fname,fname))
+os.system('mkdir %s/logs' % fname)
