@@ -15,14 +15,11 @@ try:
 except:
 	dname = '/altaZone/home/apertif_main/early_results/m51'
 
-fname = 'altadata'
-
 files = []
 cmd = os.popen('ls %s/*' % fname)
 for x in cmd:
 	files.append(x.strip())
 print(files)
-
 
 # Write an out file
 out = open('transfer_%s_to_ALTA.sh' % fname,'w')
