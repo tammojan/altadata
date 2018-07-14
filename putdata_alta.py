@@ -25,7 +25,7 @@ print(files)
 out = open('transfer_%s_to_ALTA.sh' % fname,'w')
 out.write("""#!/bin/bash
 imkdir -p %s/%s
-iput -rkI -X logs/%s-icat.irods-status --lfrestart logs/%s-icat.lf-irods-status --retries 5 -N 4 -R alta-icat-Resc %s %s/%s >> logs/transfer_%s_to_alta_icat.log &
+iput -rkI -X logs/%s-icat.irods-status --lfrestart logs/%s-icat.lf-irods-status --retries 5 -N 4 -R alta-icat-Resc %s/%s %s/%s >> logs/transfer_%s_to_alta_icat.log &
 wait #iput
 irsync -rsl %s i:%s/%s > logs/transfer_%s_to_alta_verify.log 2>&1
 FAILED_FILES=`cat logs/transfer_%s_to_alta_verify.log | wc -l`
@@ -35,12 +35,12 @@ then
 else
   curl -X POST --data-urlencode 'payload={"text":"Transfer of %s to ALTA finished incomplete. Check logs!"}' https://hooks.slack.com/services/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
 fi
-""" % (dname,fname,fname,fname,' '.join(files),dname,fname,fname,' '.join(files),dname,fname,fname,fname,fname,fname))
+""" % (dname,fname,fname,fname,fname,(' %s/' % fname).join(files),dname,fname,fname,' '.join(files),dname,fname,fname,fname,fname,fname))
 out.flush()
 
 # Make the file executable
 os.system('chmod oug+x transfer_%s_to_ALTA.sh' % (fname))
 
 # Move the file to the correct folder 
-os.system('mv transfer_%s_to_ALTA.sh %s' % (fname,fname))
-os.system('mkdir %s/logs' % fname)
+#os.system('mv transfer_%s_to_ALTA.sh %s' % (fname,fname))
+#os.system('mkdir %s/logs' % fname)
