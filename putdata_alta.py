@@ -16,7 +16,7 @@ except:
 	dname = '/altaZone/home/apertif_main/early_results/m51'
 
 files = []
-cmd = os.popen('ls %s/*' % fname)
+cmd = os.popen('ls %s' % fname)
 for x in cmd:
 	files.append(x.strip())
 print(files)
