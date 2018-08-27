@@ -63,6 +63,43 @@ for ii in range(bstart,bend+1):
 		os.system(cmd)
 
 os.system('rm -rf *irods-status')
+
+# Add verification at the end of the transfer 
+for ii in range(bstart,bend+1):
+
+	print "###########################"
+	
+	print 'Verifying Beam %.3d...' % ii
+
+	for jj in range(int(istart),int(iend)+1):
+		print 'Processing task ID %.3d...' % jj
+
+		# Toggle for when we started using more digits:
+		if int(date) <= 180216:
+			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS WSRTA%s%.2d_B%.3d.MS >> transfer_WSRTA%s%.2d_to_alta_verify.log 2>&1" % (date,jj,date,jj,ii,date,jj,ii,date,jj)
+		else:
+			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (date,jj,date,jj,ii,date,jj,ii,date,jj)
+
+		os.system(cmd)
+
+# Check for failed files
+for jj in range(int(istart),int(iend)+1):
+	print 'Processing task ID %.3d...' % jj
+	
+	cmd = os.popen('cat transfer_WSRTA%s%.3d_to_alta_verify.log | wc -l' % (date,jj))
+	for x in cmd:
+		print 'Failed files:',x.strip()
+		failed_files = x.strip()
+
+	if failed_files == '0':
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d from ALTA to happili finished."}' https://hooks.slack.com/services/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""" % (date,jj)
+	else:
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d from ALTA to happili finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,jj)
+
+	# Execute the command
+	os.system(cmd)
+
+
 print "###########################"
 
 # Time the transfer
