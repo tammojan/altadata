@@ -92,9 +92,9 @@ for jj in range(int(istart),int(iend)+1):
 		failed_files = x.strip()
 
 	if failed_files == '0':
-		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d from ALTA to happili finished."}' https://hooks.slack.com/services/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""" % (date,jj)
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to happili finished."}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend)
 	else:
-		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d from ALTA to happili finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,jj)
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to happili finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend)
 
 	# Execute the command
 	os.system(cmd)
