@@ -82,6 +82,10 @@ for ii in range(bstart,bend+1):
 
 		os.system(cmd)
 
+# Identify server details
+hostname = os.popen('hostname').read().strip()
+path = os.popen('pwd').read().strip() # not using this for now but maybe in future
+
 # Check for failed files
 for jj in range(int(istart),int(iend)+1):
 	print 'Processing task ID %.3d...' % jj
@@ -92,9 +96,9 @@ for jj in range(int(istart),int(iend)+1):
 		failed_files = x.strip()
 
 	if failed_files == '0':
-		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to happili finished."}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend)
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished."}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend,hostname)
 	else:
-		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to happili finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend)
+		cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,jj,bstart,bend,hostname))
 
 	# Execute the command
 	os.system(cmd)
