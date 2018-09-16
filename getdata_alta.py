@@ -54,7 +54,7 @@ for ii in range(bstart,bend+1):
 	for jj in range(int(istart),int(iend)+1):
 		print 'Processing task ID %.3d...' % jj
 
-		if int(date) <= 180216:
+		if int(date) < 180216:
 			cmd = "iget -rfPIT -X WSRTA%s%.2d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.2d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
 		else:
 			cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,jj,ii,date,jj,ii,date,jj,date,jj,ii)
@@ -75,7 +75,7 @@ for ii in range(bstart,bend+1):
 		print 'Processing task ID %.3d...' % jj
 
 		# Toggle for when we started using more digits:
-		if int(date) <= 180216:
+		if int(date) < 180216:
 			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS WSRTA%s%.2d_B%.3d.MS >> transfer_WSRTA%s%.2d_to_alta_verify.log 2>&1" % (date,jj,date,jj,ii,date,jj,ii,date,jj)
 		else:
 			cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (date,jj,date,jj,ii,date,jj,ii,date,jj)
