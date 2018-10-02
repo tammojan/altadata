@@ -58,11 +58,12 @@ def main():
 			# Total ALTA size in GB
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
-		# Print results
-		print('\n\n')
-		print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
 		lines.append("%-31s %.2f\t\t\t\t%s\n" % (folder,size,total_alta))
 
+
+	# Print results
+	print('\n\n')
+	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
 	print lines
 
 if __name__ == '__main__':
