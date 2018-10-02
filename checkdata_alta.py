@@ -58,13 +58,19 @@ def main():
 			# Total ALTA size in GB
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
-		lines.append("%-31s %.2f\t\t\t\t%s\n" % (folder,size,total_alta))
+		# Calc diff if relevant
+		if total_alta != '-':
+			diff = '%.2f' % (float(total_alta) - size)
+		else:
+			diff = '-'
+
+		lines.append("%-31s %.2f\t\t\t\t%s\t\t\t\t%s\n" % (folder,size,total_alta,diff))
 
 
 	# Print results
 	print('\n\n')
-	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
-	print lines
+	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)\t\t\tDifference(GB)")
+	print ''.join(lines)
 
 if __name__ == '__main__':
     main()
