@@ -26,12 +26,11 @@ def main():
 	# List all folders in that directly
 	cmd = os.popen('ls -d %s/*/' % args.path)
 
-	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
 	lines = []
 
 	for line in cmd:
 
-		#print('Parsing... %s' % line.strip())
+		print('Parsing... %s' % line.strip())
 
 		tid = line.split('/')[-2].split('_')[0]
 		folder = line.split('/')[-2]
@@ -60,6 +59,8 @@ def main():
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
 		# Print results
+		print('\n\n')
+		print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
 		lines.append("%-31s %.2f\t\t\t\t%s\n" % (folder,size,total_alta))
 
 	print lines
