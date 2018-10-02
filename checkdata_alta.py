@@ -59,7 +59,7 @@ def main():
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
 		# Print results
-		print("%s\t\t\t%.2f\t\t\t\t%s" % (folder,size,total_alta))
+		print("%-31s %.2f\t\t\t\t%s" % (folder,size,total_alta))
 
 
 if __name__ == '__main__':
