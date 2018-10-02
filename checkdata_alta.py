@@ -27,6 +27,7 @@ def main():
 	cmd = os.popen('ls -d %s/*/' % args.path)
 
 	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)")
+	lines = []
 
 	for line in cmd:
 
@@ -48,7 +49,7 @@ def main():
 			datainalta = 'Y'
 
 			# Calculate size of data in ALTA
-			cmd = os.popen("""iquest "%%s: %%s" "SELECT COLL_NAME, sum(DATA_SIZE) WHERE COLL_NAME like '/altaZone/home/apertif_main/wcudata/WSRTA%s/%%.MS'" """ % tid)
+			cmd = os.popen("""iquest "%%s: %%s" "SELECT COLL_NAME, sum(DATA_SIZE) WHERE COLL_NAME like '/altaZone/home/apertif_main/wcudata/WSRTA%s/%%.MS'" >/dev/null 2>&1 """ % tid)
 			alta_sizes = []
 			for line in cmd:
 				col = line.split()
@@ -59,8 +60,9 @@ def main():
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
 		# Print results
-		print("%-31s %.2f\t\t\t\t%s" % (folder,size,total_alta))
+		lines.append("%-31s %.2f\t\t\t\t%s\n" % (folder,size,total_alta))
 
+	print lines
 
 if __name__ == '__main__':
     main()
