@@ -69,7 +69,7 @@ def main():
 
 	# Print results
 	print('\n\n')
-	print("FOLDER\t\t\t\tHappili(GB)\t\t\tALTA(GB)\t\t\tDifference(GB)")
+	print("%-31s Happili(GB)\t\t\tALTA(GB)\t\t\tDifference(GB)" % ('FOLDER'))
 	print ''.join(lines)
 
 if __name__ == '__main__':
