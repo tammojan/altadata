@@ -36,7 +36,7 @@ def main():
 		folder = line.split('/')[-2]
 		
 		# Check size of that directory in GB
-		cmd2 = os.popen('du -s %s/%s*' % (path,tid)).read()
+		cmd2 = os.popen('du -s %s/%s*' % (args.path,tid)).read()
 		size = float(cmd2.split('\t')[0])/1e6
 
 		# Check ALTA size
