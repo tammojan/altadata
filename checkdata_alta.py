@@ -48,7 +48,9 @@ def main():
 			datainalta = 'Y'
 
 			# Calculate size of data in ALTA
-			cmd = os.popen("""iquest "%%s: %%s" "SELECT COLL_NAME, sum(DATA_SIZE) WHERE COLL_NAME like '/altaZone/home/apertif_main/wcudata/WSRTA%s/%%.MS'" """ % tid)
+			cmd_text = ("""iquest "%%s: %%s" "SELECT COLL_NAME, sum(DATA_SIZE) WHERE COLL_NAME like '/altaZone/home/apertif_main/wcudata/WSRTA%s/%%.MS'" """ % tid)
+			print(cmd_text)
+			cmd = os.popen(cmd_text)
 			alta_sizes = []
 			for line in cmd:
 				col = line.split()
