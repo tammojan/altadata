@@ -51,22 +51,23 @@ def main():
 			cmd_text = ("""iquest "%%s: %%s" "SELECT COLL_NAME, sum(DATA_SIZE) WHERE COLL_NAME like '/altaZone/home/apertif_main/wcudata/WSRTA%s/%%.MS'" """ % tid)
 			print(cmd_text)
 			cmd = os.popen(cmd_text)
-			if 'Nothing was found matching your query' not in cmd:
 
-				alta_sizes = []
+			alta_sizes = []
 
-				for line in cmd:
-					col = line.split()
-					alta_size = float(col[-1])
-					alta_sizes.append(alta_size)
+			for line in cmd:
+				col = line.split()
+				if "query" in line:
+					total_alta = '-'
+					break
+				alta_size = float(col[-1])
+				alta_sizes.append(alta_size)
 
-				# Total ALTA size in GB
-				print(alta_sizes)
+			# Total ALTA size in GB
+			print(alta_sizes)
+			if len(alta_sizes) > 0:
 				total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
-			else:
-				total_alta = '-'
-
+				
 		# Calc diff if relevant
 		if total_alta != '-':
 			diff = '%.2f' % (float(total_alta) - size)
