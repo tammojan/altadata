@@ -63,11 +63,10 @@ def main():
 				alta_sizes.append(alta_size)
 
 			# Total ALTA size in GB
-			print(alta_sizes)
 			if len(alta_sizes) > 0:
 				total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
-				
+
 		# Calc diff if relevant
 		if total_alta != '-':
 			diff = '%.2f' % (float(total_alta) - size)
