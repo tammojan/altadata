@@ -57,11 +57,12 @@ def main():
 					col = line.split()
 					alta_size = float(col[-1])
 					alta_sizes.append(alta_size)
+
+				# Total ALTA size in GB
+				total_alta = '%.2f' % (sum(alta_sizes)/1e9)
+
 			else:
 				total_alta = '-'
-
-			# Total ALTA size in GB
-			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
 
 		# Calc diff if relevant
 		if total_alta != '-':
