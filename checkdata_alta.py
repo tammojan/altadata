@@ -52,10 +52,13 @@ def main():
 			print(cmd_text)
 			cmd = os.popen(cmd_text)
 			alta_sizes = []
-			for line in cmd:
-				col = line.split()
-				alta_size = float(col[-1])
-				alta_sizes.append(alta_size)
+			if 'Nothing was found matching your query' not in cmd:
+				for line in cmd:
+					col = line.split()
+					alta_size = float(col[-1])
+					alta_sizes.append(alta_size)
+			else:
+				total_alta = '-'
 
 			# Total ALTA size in GB
 			total_alta = '%.2f' % (sum(alta_sizes)/1e9)
