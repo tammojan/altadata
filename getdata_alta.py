@@ -38,6 +38,33 @@ def parse_list(spec):
 
     return ret_list
 
+def get_alta_dir(date, task_id, beam_nr, alta_exception):
+    """Get the directory where stuff is stored in ALTA. Takes care of different historical locations
+
+    Args:
+        date (str): date for which location is requested
+        task_id (int): task id
+        beam_nr (int): beam id
+        alta_exception (bool): force the format used between 180201 and 180321
+
+    Returns:
+        str: location in ALTA, including the date itself
+
+    Examples:
+        >>> get_alta_dir(180201, 5, 35, False)
+        '/altaZone/home/apertif_main/wcudata/WSRTA18020105/WSRTA18020105_B035.MS'
+        >>> get_alta_dir(180321, 5, 35, False)
+        '/altaZone/home/apertif_main/wcudata/WSRTA180321005/WSRTA180321005_B035.MS'
+        >>> get_alta_dir(181205, 5, 35, False)
+        '/altaZone/archive/apertif_main/visibilities_default/181205005/WSRTA181205005_B035.MS'
+    """
+    if int(date) < 180216:
+        return "/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+    elif int(date) < 181003 or alta_exception:
+        return "/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+    else:
+        return "/altaZone/archive/apertif_main/visibilities_default/%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+ 
 def main(date, beams, task_ids, alta_exception):
     """Download data from ALTA using low-level IRODS commands.
     Report status to slack
@@ -55,39 +82,31 @@ def main(date, beams, task_ids, alta_exception):
 
         print("###########################")
 
-        print('Processing Beam %.3d...' % beam_nr)
+        print('Processing beam %.3d...' % beam_nr)
 
         for task_id in task_ids:
             print('Processing task ID %.3d...' % task_id)
 
-            if int(date) < 180216:
-                cmd = "iget -rfPIT -X WSRTA%s%.2d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.2d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS" % (date,task_id,beam_nr,date,task_id,beam_nr,date,task_id,date,task_id,beam_nr)
-            elif int(date) < 181003 or alta_exception == 'Y':
-                cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,beam_nr,date,task_id,beam_nr,date,task_id,date,task_id,beam_nr)
-            else:
-                cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 /altaZone/archive/apertif_main/visibilities_default/%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,beam_nr,date,task_id,beam_nr,date,task_id,date,task_id,beam_nr)
+            alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
+            cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 %s" % (date, task_id, beam_nr, date, task_id, beam_nr, alta_dir)
             print(cmd)
             os.system(cmd)
 
     os.system('rm -rf *irods-status')
 
     # Add verification at the end of the transfer
-    for beam_nr in range(bstart,bend+1):
+    for beam_nr in beams:
 
         print("###########################")
 
-        print('Verifying Beam %.3d...' % beam_nr)
+        print('Verifying beam %.3d...' % beam_nr)
 
-        for task_id in range(int(istart),int(iend)+1):
+        for task_id in task_ids:
             print('Processing task ID %.3d...' % task_id)
 
             # Toggle for when we started using more digits:
-            if int(date) < 180216:
-                cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS WSRTA%s%.2d_B%.3d.MS >> transfer_WSRTA%s%.2d_to_alta_verify.log 2>&1" % (date,task_id,date,task_id,beam_nr,date,task_id,beam_nr,date,task_id)
-            elif int(date) < 181003 or alta_exception == 'Y':
-                cmd = "irsync -srl i:/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (date,task_id,date,task_id,beam_nr,date,task_id,beam_nr,date,task_id)
-            else:
-                cmd = "irsync -srl i:/altaZone/archive/apertif_main/visibilities_default/%s%.3d/WSRTA%s%.3d_B%.3d.MS WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (date,task_id,date,task_id,beam_nr,date,task_id,beam_nr,date,task_id)
+            alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
+            cmd = "irsync -srl i:%s WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (alta_dir, date, task_id, beam_nr, date, task_id)
 
             os.system(cmd)
 
@@ -96,7 +115,7 @@ def main(date, beams, task_ids, alta_exception):
     path = os.popen('pwd').read().strip() # not using this for now but maybe in future
 
     # Check for failed files
-    for task_id in range(int(istart),int(iend)+1):
+    for task_id in task_ids:
         print('Processing task ID %.3d...' % task_id)
 
         cmd = os.popen('cat transfer_WSRTA%s%.3d_to_alta_verify.log | wc -l' % (date,task_id))
@@ -105,9 +124,9 @@ def main(date, beams, task_ids, alta_exception):
             failed_files = x.strip()
 
         if failed_files == '0':
-            cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished."}' https://hooks.slack.com/services/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""" % (date,task_id,bstart,bend,hostname)
+            cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished."}' https://hooks.slack.com/services/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""" % (date,task_id,beams[0],beams[-1],hostname)
         else:
-            cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,task_id,bstart,bend,hostname)
+            cmd = """curl -X POST --data-urlencode 'payload={"text":"Transfer of WSRTA%s%.3d (B%.3d-B%.3d) from ALTA to %s finished incomplete. Check logs!"}' https://hooks.slack.com/services/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""" % (date,task_id,beams[0],beams[-1],hostname)
 
         # Execute the command
         os.system(cmd)
@@ -124,6 +143,9 @@ def main(date, beams, task_ids, alta_exception):
 
 
 if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
     args = sys.argv
     # Get date
     try:
@@ -149,22 +171,20 @@ if __name__ == "__main__":
     # Get beams
     try:
         alta_exception = args[4]
+        if alta_exception == 'Y':
+            alta_exception = True
+        else:
+            alta_exception = False
     except:
-        alta_exception = 'N'
+        alta_exception = False
 
     # Now with all the information required, loop through beams
-    bstart = int(brange.split('-')[0])
-    bend = int(brange.split('-')[1])
+    beams = parse_list(brange)
 
     # Now with all the information required, loop through task_ids
-    istart = int(irange.split('-')[0])
-    iend = int(irange.split('-')[1])
+    task_ids = parse_list(irange)
 
-    task_ids = list(range(int(istart),int(iend)+1))
-
-    print("Start beam:",bstart)
-    print("End beam:",bend)
-
-    beams = list(range(int(bstart), int(bend)+1))
+    print("Beams:",beams)
+    print("Task ids:",task_ids)
 
     main(date, beams, task_ids, alta_exception)
