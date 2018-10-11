@@ -14,9 +14,33 @@ import sys
 import time
 import argparse
 
+
+def parse_list(spec):
+    """Convert a string specification like 00-04,07,09-12 into a list [0,1,2,3,4,7,9,10,11,12]
+
+    Args:
+        spec (str): string specification
+
+    Returns:
+        List[int]
+
+    Example:
+        >>> parse_list("00-04,07,09-12")
+        [0, 1, 2, 3, 4, 7, 9, 10, 11, 12]
+    """
+    ret_list = []
+    for spec_part in spec.split(","):
+        if "-" in spec_part:
+            begin, end = spec_part.split("-")
+            ret_list += range(int(begin), int(end)+1)
+        else:
+            ret_list += [int(spec_part)]
+
+    return ret_list
+
 def main(date, beams, task_ids, alta_exception):
     """Download data from ALTA using low-level IRODS commands.
-    Report success to slack
+    Report status to slack
 
     Args:
         data (str): date of the observation
