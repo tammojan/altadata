@@ -27,11 +27,17 @@ def parse_list(spec):
     Example:
         >>> parse_list("00-04,07,09-12")
         [0, 1, 2, 3, 4, 7, 9, 10, 11, 12]
+        >>> parse_list("05-04")
+        Traceback (most recent call last):
+            ...
+        ValueError: In specification 05-04, end should not be smaller than begin
     """
     ret_list = []
     for spec_part in spec.split(","):
         if "-" in spec_part:
             begin, end = spec_part.split("-")
+            if end<begin:
+                raise ValueError("In specification %s, end should not be smaller than begin"%spec_part)
             ret_list += range(int(begin), int(end)+1)
         else:
             ret_list += [int(spec_part)]
@@ -59,11 +65,11 @@ def get_alta_dir(date, task_id, beam_nr, alta_exception):
         '/altaZone/archive/apertif_main/visibilities_default/181205005/WSRTA181205005_B035.MS'
     """
     if int(date) < 180216:
-        return "/altaZone/home/apertif_main/wcudata/WSRTA%s%.2d/WSRTA%s%.2d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+        return "/altaZone/home/apertif_main/wcudata/WSRTA{date}{task_id:02d}/WSRTA{date}{task_id:02d}_B{beam_nr:03d}.MS".format(**locals())
     elif int(date) < 181003 or alta_exception:
-        return "/altaZone/home/apertif_main/wcudata/WSRTA%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+        return "/altaZone/home/apertif_main/wcudata/WSRTA{date}{task_id:03d}/WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS".format(**locals())
     else:
-        return "/altaZone/archive/apertif_main/visibilities_default/%s%.3d/WSRTA%s%.3d_B%.3d.MS" % (date,task_id,date,task_id,beam_nr)
+        return "/altaZone/archive/apertif_main/visibilities_default/{date}{task_id:03d}/WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS".format(**locals())
  
 def main(date, beams, task_ids, alta_exception):
     """Download data from ALTA using low-level IRODS commands.
@@ -88,7 +94,7 @@ def main(date, beams, task_ids, alta_exception):
             print('Processing task ID %.3d...' % task_id)
 
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
-            cmd = "iget -rfPIT -X WSRTA%s%.3d_B%.3d-icat.irods-status --lfrestart WSRTA%s%.3d_B%.3d-icat.lf-irods-status --retries 5 %s" % (date, task_id, beam_nr, date, task_id, beam_nr, alta_dir)
+            cmd = "iget -rfPIT -X WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.irods-status --lfrestart WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.lf-irods-status --retries 5 {alta_dir}".format(**locals())
             print(cmd)
             os.system(cmd)
 
@@ -106,7 +112,7 @@ def main(date, beams, task_ids, alta_exception):
 
             # Toggle for when we started using more digits:
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
-            cmd = "irsync -srl i:%s WSRTA%s%.3d_B%.3d.MS >> transfer_WSRTA%s%.3d_to_alta_verify.log 2>&1" % (alta_dir, date, task_id, beam_nr, date, task_id)
+            cmd = "irsync -srl i:{alta_dir} WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS >> transfer_WSRTA{date}{task_id:03d}_to_alta_verify.log 2>&1".format(**locals())
 
             os.system(cmd)
 
