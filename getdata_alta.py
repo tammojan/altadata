@@ -14,56 +14,26 @@ import sys
 import time
 import argparse
 
-def main(args):
+def main(date, beams, task_ids, alta_exception):
+    """Download data from ALTA using low-level IRODS commands.
+    Report success to slack
+
+    Args:
+        data (str): date of the observation
+        beams (List[int]): list of beam numbers
+        task_ids (List[int]): list of task_ids
+    """
     # Time the transfer
     start = time.time()
     print(args[0])
 
-    # Get date
-    try:
-    	date = args[1]
-    except:
-    	print("Date required! Format: YYMMDD e.g. 180309")
-    	sys.exit()
-    
-    # Get date
-    try:
-    	irange = args[2]
-    except:
-    	print("ID range required! Format: NNN-NNN e.g. 002-010")
-    	sys.exit()
-    
-    # Get beams
-    try: 
-    	brange = args[3]
-    except:
-    	print("Beam range required! Format: NN-NN e.g. 00-37")
-    	sys.exit()
-    
-    # Get beams
-    try: 
-    	alta_exception = args[4]
-    except:
-    	alta_exception = 'N'
-    
-    # Now with all the information required, loop through beams
-    bstart = int(brange.split('-')[0])
-    bend = int(brange.split('-')[1])
-    
-    # Now with all the information required, loop through beams
-    istart = int(irange.split('-')[0])
-    iend = int(irange.split('-')[1])
-    
-    print("Start beam:",bstart)
-    print("End beam:",bend)
-    
-    for beam_nr in range(bstart,bend+1):
+    for beam_nr in beams:
     
     	print("###########################")
     	
     	print('Processing Beam %.3d...' % beam_nr)
     
-    	for task_id in range(int(istart),int(iend)+1):
+        for task_id in task_ids: 
     		print('Processing task ID %.3d...' % task_id)
     
     		if int(date) < 180216:
@@ -130,4 +100,47 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    args = sys.argv
+    # Get date
+    try:
+    	date = args[1]
+    except:
+    	print("Date required! Format: YYMMDD e.g. 180309")
+    	sys.exit()
+    
+    # Get date
+    try:
+    	irange = args[2]
+    except:
+    	print("ID range required! Format: NNN-NNN e.g. 002-010")
+    	sys.exit()
+    
+    # Get beams
+    try: 
+    	brange = args[3]
+    except:
+    	print("Beam range required! Format: NN-NN e.g. 00-37")
+    	sys.exit()
+    
+    # Get beams
+    try: 
+    	alta_exception = args[4]
+    except:
+    	alta_exception = 'N'
+    
+    # Now with all the information required, loop through beams
+    bstart = int(brange.split('-')[0])
+    bend = int(brange.split('-')[1])
+    
+    # Now with all the information required, loop through task_ids
+    istart = int(irange.split('-')[0])
+    iend = int(irange.split('-')[1])
+
+    task_ids = list(range(int(istart),int(iend)+1))
+    
+    print("Start beam:",bstart)
+    print("End beam:",bend)
+
+    beams = list(range(int(bstart), int(bend)+1))
+    
+    main(date, beams, task_ids, alta_exception)
