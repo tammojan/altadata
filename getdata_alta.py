@@ -13,6 +13,7 @@ import os
 import sys
 import time
 import argparse
+import logging
 
 
 def parse_list(spec):
@@ -82,20 +83,22 @@ def main(date, beams, task_ids, alta_exception):
     """
     # Time the transfer
     start = time.time()
-    print(args[0])
+    logger = logging.getLogger("GET_ALTA")
+    logger.setLevel(logging.DEBUG)
+
+    logger.info('########## Start getting data from ALTA ##########')
+    logging.info('Beams: ', beams)
 
     for beam_nr in beams:
 
-        print("###########################")
-
-        print('Processing beam %.3d...' % beam_nr)
+        logger.info('###### Processing beam %.3d... ######' % beam_nr)
 
         for task_id in task_ids:
-            print('Processing task ID %.3d...' % task_id)
+            logger.info('Processing task ID %.3d...' % task_id)
 
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
             cmd = "iget -rfPIT -X WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.irods-status --lfrestart WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.lf-irods-status --retries 5 {alta_dir}".format(**locals())
-            print(cmd)
+            logger.info(cmd)
             os.system(cmd)
 
     os.system('rm -rf *irods-status')
@@ -103,12 +106,10 @@ def main(date, beams, task_ids, alta_exception):
     # Add verification at the end of the transfer
     for beam_nr in beams:
 
-        print("###########################")
-
-        print('Verifying beam %.3d...' % beam_nr)
+        logger.info('###### Verifying beam %.3d... ######' % beam_nr)
 
         for task_id in task_ids:
-            print('Processing task ID %.3d...' % task_id)
+            logger.info('Verifying task ID %.3d...' % task_id)
 
             # Toggle for when we started using more digits:
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
@@ -122,11 +123,11 @@ def main(date, beams, task_ids, alta_exception):
 
     # Check for failed files
     for task_id in task_ids:
-        print('Processing task ID %.3d...' % task_id)
+        logger.info('Checking failed files for task ID %.3d...' % task_id)
 
         cmd = os.popen('cat transfer_WSRTA%s%.3d_to_alta_verify.log | wc -l' % (date,task_id))
         for x in cmd:
-            print('Failed files:',x.strip())
+            logger.warning('Failed files:',x.strip())
             failed_files = x.strip()
 
         if failed_files == '0':
@@ -137,20 +138,20 @@ def main(date, beams, task_ids, alta_exception):
         # Execute the command
         os.system(cmd)
 
-
-    print("###########################")
-
     # Time the transfer
     end = time.time()
 
     # Print the results
     diff = (end-start)/60. # in min
-    print("Total time to transfer data: %.2f min" % diff)
+    logger.info("Total time to transfer data: %.2f min" % diff)
+    logger.info("########## Done getting data from ALTA ##########")
 
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
+    logging.basicConfig()
 
     args = sys.argv
     # Get date
@@ -189,8 +190,5 @@ if __name__ == "__main__":
 
     # Now with all the information required, loop through task_ids
     task_ids = parse_list(irange)
-
-    print("Beams:",beams)
-    print("Task ids:",task_ids)
 
     main(date, beams, task_ids, alta_exception)
