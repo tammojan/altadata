@@ -52,7 +52,7 @@ def get_alta_dir(date, task_id, beam_nr, alta_exception):
         date (str): date for which location is requested
         task_id (int): task id
         beam_nr (int): beam id
-        alta_exception (bool): force the format used between 180201 and 180321
+        alta_exception (bool): force 3 digits task id, old directory
 
     Returns:
         str: location in ALTA, including the date itself
@@ -72,19 +72,37 @@ def get_alta_dir(date, task_id, beam_nr, alta_exception):
     else:
         return "/altaZone/archive/apertif_main/visibilities_default/{date}{task_id:03d}/WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS".format(**locals())
  
-def main(date, beams, task_ids, alta_exception):
+def getdata_alta(date, task_ids, beams, targetdir=".", tmpdir=".", alta_exception=False):
     """Download data from ALTA using low-level IRODS commands.
     Report status to slack
 
     Args:
         data (str): date of the observation
-        beams (List[int]): list of beam numbers
-        task_ids (List[int]): list of task_ids
+        task_ids (List[int] or int): list of task_ids, or a single task_id (int)
+        beams (List[int] or int): list of beam numbers, or a single beam number (int)
+        targetdir (str): directory to put the downloaded files
+        tmpdir (str): directory for temporary files
+        alta_exception (bool): force 3 digits task id, old directory
     """
     # Time the transfer
     start = time.time()
     logger = logging.getLogger("GET_ALTA")
     logger.setLevel(logging.DEBUG)
+
+    if isinstance(task_ids, int):
+        task_ids = [task_ids]
+    if isinstance(beams, int):
+        beams = [beams]
+
+    if tmpdir == "":
+        tmpdir = "."
+    if targetdir == "":
+        targetdir = "."
+
+    if tmpdir[-1] != "/":
+        tmpdir += "/"
+    if targetdir[-1] != "/":
+        targetdir += "/"
 
     logger.info('########## Start getting data from ALTA ##########')
     logging.info('Beams: ', beams)
@@ -97,11 +115,11 @@ def main(date, beams, task_ids, alta_exception):
             logger.info('Processing task ID %.3d...' % task_id)
 
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
-            cmd = "iget -rfPIT -X WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.irods-status --lfrestart WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.lf-irods-status --retries 5 {alta_dir}".format(**locals())
+            cmd = "iget -rfPIT -X {tmpdir}WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.irods-status --lfrestart {tmpdir}WSRTA{date}{task_id:03d}_B{beam_nr:03d}-icat.lf-irods-status --retries 5 {alta_dir} {targetdir}".format(**locals())
             logger.info(cmd)
             os.system(cmd)
 
-    os.system('rm -rf *irods-status')
+    os.system('rm -rf {tmpdir}*irods-status'.format(**locals()))
 
     # Add verification at the end of the transfer
     for beam_nr in beams:
@@ -113,7 +131,7 @@ def main(date, beams, task_ids, alta_exception):
 
             # Toggle for when we started using more digits:
             alta_dir = get_alta_dir(date, task_id, beam_nr, alta_exception)
-            cmd = "irsync -srl i:{alta_dir} WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS >> transfer_WSRTA{date}{task_id:03d}_to_alta_verify.log 2>&1".format(**locals())
+            cmd = "irsync -srl i:{alta_dir} {targetdir}WSRTA{date}{task_id:03d}_B{beam_nr:03d}.MS >> {tmpdir}transfer_WSRTA{date}{task_id:03d}_to_alta_verify.log 2>&1".format(**locals())
 
             os.system(cmd)
 
@@ -125,9 +143,9 @@ def main(date, beams, task_ids, alta_exception):
     for task_id in task_ids:
         logger.info('Checking failed files for task ID %.3d...' % task_id)
 
-        cmd = os.popen('cat transfer_WSRTA%s%.3d_to_alta_verify.log | wc -l' % (date,task_id))
+        cmd = os.popen('cat {tmpdir}transfer_WSRTA{date}{task_id:03d}_to_alta_verify.log | wc -l'.format(**locals()))
         for x in cmd:
-            logger.warning('Failed files:',x.strip())
+            logger.warning('Failed files: %s',x.strip())
             failed_files = x.strip()
 
         if failed_files == '0':
@@ -191,4 +209,4 @@ if __name__ == "__main__":
     # Now with all the information required, loop through task_ids
     task_ids = parse_list(irange)
 
-    main(date, beams, task_ids, alta_exception)
+    getdata_alta(date, task_ids, beams, ".", ".", alta_exception)
