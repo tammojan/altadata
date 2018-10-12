@@ -35,7 +35,6 @@ def main():
 
 
 	# Return the output
-	print('\n\n')
 	print('NODE\t\t\tSTATUS\t\t\tDATA(TB)\t\t\tUSAGE(%%)')
 	print ''.join(lines)
 
