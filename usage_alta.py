@@ -36,7 +36,7 @@ def main():
 
 	# Return the output
 	print('\n##########################################################################################')
-	print('NODE\t\t\tSTATUS\t\t\FREE(TB)\t\t\tUSAGE(%)')
+	print('NODE\t\t\tSTATUS\t\t\tFREE(TB)\t\t\tUSAGE(%)')
 	print ''.join(lines).strip('\n')
 	print('##########################################################################################\n')
 
