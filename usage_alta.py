@@ -11,12 +11,12 @@ import sys
 
 def main():
 	"""
-    The main program to be run.
-    :return:
-    """
+	The main program to be run.
+	:return:
+	"""
 
-    nodes = ['icat','res1','res2','res3']
-    lines = []
+	nodes = ['icat','res1','res2','res3']
+	lines = []
 	
 	# Loop through nodes
 	for node in nodes:
