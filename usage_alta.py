@@ -31,7 +31,7 @@ def main():
 		fullness = usage/400 * 100.0
 
 		# Make a print statement
-		lines.append("%s\t\t\t%s\t\t\t%.2f\t\t\t%.2f" (node,status,usage,fullness))
+		lines.append("%s\t\t\t%s\t\t\t%.2f\t\t\t%.2f" % (node,status,usage,fullness))
 
 
 	# Return the output
