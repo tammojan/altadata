@@ -31,12 +31,12 @@ def main():
 		fullness = (1 - usage/410.27) * 100.0
 
 		# Make a print statement
-		lines.append("%s\t\t\t%s\t\t\t%.2f TB\t\t\t%.1f %%\n" % (node,status,usage,fullness))
+		lines.append("%s\t\t\t%s\t\t\t%.2f TB\t\t\t%.1f%%\n" % (node,status,usage,fullness))
 
 
 	# Return the output
 	print('\n')
-	print('NODE\t\t\tSTATUS\t\t\tDATA(TB)\t\t\tUSAGE(%%)')
+	print('NODE\t\t\tSTATUS\t\t\tDATA(TB)\t\t\tUSAGE(%)')
 	print ''.join(lines)
 
 
