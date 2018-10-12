@@ -28,7 +28,7 @@ def main():
 		usage = float(data.split('free space: ')[1].split('\n')[0])/1e12 # in TB
 
 		# Each node has 400 TB, convert to % free
-		fullness = usage/400 * 100.0
+		fullness = (1 - usage/400) * 100.0
 
 		# Make a print statement
 		lines.append("%s\t\t\t%s\t\t\t%.2f TB\t\t\t%.1f %%\n" % (node,status,usage,fullness))
