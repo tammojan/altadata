@@ -105,7 +105,7 @@ def getdata_alta(date, task_ids, beams, targetdir=".", tmpdir=".", alta_exceptio
         targetdir += "/"
 
     logger.info('########## Start getting data from ALTA ##########')
-    logging.info('Beams: ', beams)
+    logging.info('Beams: %s'%beams)
 
     for beam_nr in beams:
 
