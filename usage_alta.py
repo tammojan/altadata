@@ -23,7 +23,7 @@ def main():
 
 		# Check status and usage
 		cmd = 'ilsresc -l alta-%s-Resc' % node
-		data = os.system(cmd).read()
+		data = os.popen(cmd).read()
 		status = data.split('status: ')[1].split('\n')[0]
 		usage = float(data.split('free space: ')[1].split('\n')[0])/1e12 # in TB
 
